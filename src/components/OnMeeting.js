@@ -14,13 +14,15 @@ const OnMeeting = () => {
     ];
 
     return (
-        <main className="bg-white flex flex-col items-center justify-between min-h-screen py-8 px-4">
+        <main className="bg-white flex flex-col items-center justify-between min-h-screen py-10 px-10">
         <div className="w-full max-w-[1440px] relative flex flex-col items-center">
             {/* Header */}
             <header className="w-full">
-            <Button 
+            <div className="w-full">
+                <Button 
                 onClick={() => navigate("/main")}
-                className="font-semibold text-xl mb-16">Your Logo</Button>
+                className="font-semibold text-xl mb-16">WSC</Button>
+            </div>
             </header>
 
             {/* Meeting title */}

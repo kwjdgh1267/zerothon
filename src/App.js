@@ -3,10 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import OnMeeting from './components/OnMeeting';
 import CodeInput from "./components/CodeInput";
 import CodeCreate from "./components/CodeCreate";
-//import MeetingDetail from "./components/MeetingDetail";
+import MeetingDetail from "./components/MeetingDetail";
 import Login from './components/Login'; // Login 컴포넌트 import
 //import Main from "./pages/Main";
-import MeetingDetail from "./pages/MeetingDetail";  
+//import MeetingDetail from "./pages/MeetingDetail";  
 import SignUp from './components/SignUp';
 import Main from "./components/Main";
 

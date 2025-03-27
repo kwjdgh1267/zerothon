@@ -6,10 +6,10 @@ const MeetingHeader = ({ data }) => {
   return (
     <div className="flex-1 pr-8">
       {/* Date */}
-      <div className="font-bold text-[31px]">{date}</div>
+      <div className="font-bold text-[25px]">{date}</div>
 
       {/* Meeting Title */}
-      <h1 className="font-bold text-[50px] mt-2">{title}</h1>
+      <h1 className="font-bold text-4xl mt-2">{title}</h1>
 
       {/* Host Badge */}
       <div className="mt-8">
@@ -20,7 +20,7 @@ const MeetingHeader = ({ data }) => {
       </div>
 
       {/* Participants Badge */}
-      <div className="mt-4">
+      <div className="mt-4 flex items-center gap-4">
         <Badge className="bg-[#93d7f2] text-black hover:bg-[#93d7f2] font-light text-xl px-2.5 py-1 rounded-[5px]">
           Participants
         </Badge>

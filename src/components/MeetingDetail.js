@@ -1,66 +1,118 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "./ui/button";
 import MeetingHeader from "./MeetingHeader";
 import TodoList from "./TodoList";
 import MeetingContent from "./MeetingContent";
-import { Separator } from "./ui/separator";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const MeetingDetail = () => {
+  const { id } = useParams(); // URL에서 회의 id 추출
   const navigate = useNavigate();
+  const [meeting, setMeeting] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const meetingData = {
-    date: "26.03.25",
-    title: "회의이름 1",
-    host: "Name1",
-    participants: ["Name2", "Name3", "Name4"],
+  // 백엔드 API로부터 회의 데이터를 가져옵니다.
+  useEffect(() => {
+    fetch(`http://localhost:8080/api/meetings/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("회의 정보를 불러올 수 없습니다.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMeeting(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [id]);
+
+  // Todo 항목의 체크박스 상태를 토글하고 업데이트 요청을 보냅니다.
+  const handleCheckboxChange = (index) => {
+    if (!meeting) return;
+    const updatedTodos = meeting.todoList.map((todo, i) =>
+      i === index ? { ...todo, completed: !todo.completed } : todo
+    );
+    setMeeting({ ...meeting, todoList: updatedTodos });
+    fetch(`http://localhost:8080/api/meetings/${id}/todos`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedTodos),
+    }).catch((err) => console.error("업데이트 실패:", err));
   };
 
-  const todoItems = [
-    { topic: "[주제 1] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name3" },
-    { topic: "[주제 2] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name2" },
-    { topic: "[주제 3] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name4" },
-    { topic: "[주제 4] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
-    { topic: "[주제 5] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
-  ];
+  // Todo 항목의 담당자 변경을 처리하고 업데이트 요청을 보냅니다.
+  const handleParticipantChange = (index, newParticipant) => {
+    if (!meeting) return;
+    const updatedTodos = meeting.todoList.map((todo, i) =>
+      i === index ? { ...todo, assignedTo: newParticipant } : todo
+    );
+    setMeeting({ ...meeting, todoList: updatedTodos });
+    fetch(`http://localhost:8080/api/meetings/${id}/todos`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedTodos),
+    }).catch((err) => console.error("업데이트 실패:", err));
+  };
 
-  const meetingContent = `
-[주제 1] 프로젝트 진행 상황
-- 제품 개발: 기능 테스트 완료, 최종 디자인 확정
-- 생산 일정: 4월 초 양산 시작 예정, 공급망 안정화 작업 진행 중
-- 법적 검토: 특허 및 상표 등록 절차 완료
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        로딩 중...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        {error}
+      </div>
+    );
+  if (!meeting)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        해당 회의를 찾을 수 없습니다.
+      </div>
+    );
 
-[주제 2] 마케팅 전략 논의
-- 목표 시장 분석: 20~30대 주요 타겟층, 초기 고객 확보 방안 검토
-- 온라인 홍보: SNS 마케팅 캠페인 기획, 인플루언서 협업 검토
-- 오프라인 홍보: 체험형 이벤트 진행 검토, 팝업스토어 가능성 논의
-
-[주제 3] 출시 일정 및 목표
-- 4월 10일 사전 예약 시작, 4월 25일 공식 출시
-- 출시 후 3개월 내 5만 개 판매 목표 설정
-- 고객 피드백 반영을 위한 설문조사 및 데이터 수집 계획 수립
-
-[주제 4] 기타 논의 사항
-- 가격 정책 및 프로모션 전략 재검토
-- 고객 서비스 및 AS 정책 확정
-- 투자 유치 및 파트너십 확대 방안 논의
-
-다음 회의: 2025년 4월 1일, 최종 마케팅 자료 점검 및 사전 예약 전략 확정 예정
-`;
+  // 백엔드 데이터 형식에 맞춰 MeetingHeader에 전달할 데이터 구성
+  const meetingHeaderData = {
+    date: meeting.date,
+    title: meeting.name || meeting.title,
+    host: meeting.host,
+    participants: meeting.participants.split(",").map((p) => p.trim()),
+  };
 
   return (
     <div className="bg-white w-full min-h-screen px-10 pt-10">
-      <div className="font-bold text-black text-xl mb-6">Your Logo</div>
-      <div className="flex">
-        <div className="flex-1 pr-10">
-          <MeetingHeader {...meetingData} />
+      {/* 상단 로고 버튼 */}
+      <Button onClick={() => navigate("/main")} className="font-semibold text-xl mb-5">
+        WSC
+      </Button>
+      <div className="flex gap-12 items-start">
+        <div className="flex-1 pr-8">
+          {/* MeetingHeader에 백엔드 데이터를 전달 */}
+          <MeetingHeader data={meetingHeaderData} />
           <div className="mt-10">
-            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-[10px] mb-4">TODO</div>
-            <TodoList todoItems={todoItems} />
+            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-full mb-4">
+              TODO
+            </div>
+            {/* TodoList에 백엔드의 todo 데이터를 전달하고, 이벤트 핸들러도 함께 제공합니다 */}
+            <TodoList
+              todoItems={meeting.todoList}
+              onCheckboxChange={handleCheckboxChange}
+              onParticipantChange={handleParticipantChange}
+              participants={meetingHeaderData.participants}
+            />
           </div>
         </div>
-        <div className="w-px h-auto bg-gray-300 mx-10" />
-        <div className="flex-1 pl-10">
-          <MeetingContent content={meetingContent} />
+        <div className="w-px bg-gray-300 h-[750px]" />
+        <div className="flex-1 pl-5">
+          {/* MeetingContent에 회의 내용을 전달 */}
+          <MeetingContent content={<span className="text-base">{meeting.description}</span>} />
         </div>
       </div>
     </div>
