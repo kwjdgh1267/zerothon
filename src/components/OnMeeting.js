@@ -46,10 +46,12 @@ const OnMeeting = () => {
             </div>
 
             {/* End meeting button */}
-            <Button className="mt-20 w-[179px] h-[60px] bg-[#f7b3b3] rounded-[5px] hover:bg-[#e9a5a5]">
-            <span className="[font-family:'Poppins-Regular',Helvetica] font-normal text-white text-[25px]">
-                회의 종료
-            </span>
+            <Button 
+                onClick={() => navigate("/meetingdetail")}
+                className="mt-20 w-[179px] h-[60px] bg-[#f7b3b3] rounded-[5px] hover:bg-[#e9a5a5]">
+                <span className="[font-family:'Poppins-Regular',Helvetica] font-normal text-white text-[25px]">
+                    회의 종료
+                </span>
             </Button>
         </div>
         </main>

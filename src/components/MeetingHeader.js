@@ -1,7 +1,8 @@
 import Badge from "./ui/badge";
 import React from "react";
 
-const MeetingHeader = ({ date, title, host, participants }) => {
+const MeetingHeader = ({ data }) => {
+  const { date, title, host, participants } = data || {};
   return (
     <div className="flex-1 pr-8">
       {/* Date */}
@@ -24,12 +25,13 @@ const MeetingHeader = ({ date, title, host, participants }) => {
           Participants
         </Badge>
         <div className="flex gap-4 mt-1">
-          {participants.map((participant, index) => (
+          {participants?.map((participant, index) => (
             <span key={index} className="font-medium text-base">
               {participant}
             </span>
           ))}
         </div>
+
       </div>
     </div>
   );
