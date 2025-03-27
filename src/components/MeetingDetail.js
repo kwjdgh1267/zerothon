@@ -51,7 +51,7 @@ const MeetingDetail = () => {
     <div className="bg-white w-full min-h-screen px-10 pt-10">
       <Button 
         onClick={() => navigate("/main")}
-        className="font-semibold text-xl mb-5">Your Logo</Button>
+        className="font-semibold text-xl mb-5">WSC</Button>
       <div className="flex gap-12 items-start">
         <div className="flex-1 pr-8">
           <MeetingHeader data = {meetingData} />
@@ -60,7 +60,7 @@ const MeetingDetail = () => {
             <TodoList todoItems={todoItems} />
           </div>
         </div>
-        <div className="w-px h-auto bg-gray-300 h-[750px]" />
+        <div className="w-px bg-gray-300 h-[750px]" />
           <div className="flex-1 pl-5">
             <MeetingContent content={<span className="text-base">{meetingContent}</span>} />
           </div>

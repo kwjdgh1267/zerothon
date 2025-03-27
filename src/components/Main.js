@@ -18,7 +18,7 @@ const Main = () => {
       <div className="bg-white w-full max-w-[1440px] min-h-[900px] relative p-10">
         {/* Logo */}
         <div className="[font-family: 'Poppins-SemiBold', Helvetica] font-semibold text-black text-xl mb-16">
-          Your Logo
+          WSC
         </div>
         <div className="flex items-start gap-40">
           <div className="w-2/3 max-w-[700px]">

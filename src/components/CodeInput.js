@@ -19,7 +19,7 @@ const CodeInput = () => {
       <div className="w-full">
         <Button 
         onClick={() => navigate("/main")}
-        className="font-semibold text-xl mb-16">Your Logo</Button>
+        className="font-semibold text-xl mb-16">WSC</Button>
       </div>
 
       {/* 중앙 입력란 */}
