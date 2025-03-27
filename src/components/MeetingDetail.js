@@ -60,7 +60,7 @@ const MeetingDetail = () => {
             <TodoList todoItems={todoItems} />
           </div>
         </div>
-        <div className="w-px h-auto bg-gray-300 h-[800px]" />
+        <div className="w-px h-auto bg-gray-300 h-[750px]" />
           <div className="flex-1 pl-5">
             <MeetingContent content={<span className="text-base">{meetingContent}</span>} />
           </div>
