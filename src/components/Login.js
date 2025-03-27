@@ -61,7 +61,9 @@ const Login = () => {
                                 </div>
                             </div>
 
-                            <Button className="mt-[79px] h-[57px] w-full bg-[#f7b3b3] text-white rounded-md hover:bg-[#f7b3b3]/90 text-base font-medium">
+                            <Button className="mt-[79px] h-[57px] w-full bg-[#f7b3b3] text-white rounded-md hover:bg-[#f7b3b3]/90 text-base font-medium"
+                            onClick={() => {
+                            navigate("/main")}}>
                                 Login
                             </Button>
 
