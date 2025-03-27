@@ -1,8 +1,8 @@
 import React from "react";
+import { Button } from "./ui/button";
 import MeetingHeader from "./MeetingHeader";
 import TodoList from "./TodoList";
 import MeetingContent from "./MeetingContent";
-import { Separator } from "./ui/separator";
 import { useNavigate } from "react-router-dom";
 
 const MeetingDetail = () => {
@@ -20,7 +20,7 @@ const MeetingDetail = () => {
     { topic: "[주제 2] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name2" },
     { topic: "[주제 3] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name4" },
     { topic: "[주제 4] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
-    { topic: "[주제 5] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
+    { topic: "[주제 2] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
   ];
 
   const meetingContent = `
@@ -49,21 +49,24 @@ const MeetingDetail = () => {
 
   return (
     <div className="bg-white w-full min-h-screen px-10 pt-10">
-      <div className="font-bold text-black text-xl mb-6">Your Logo</div>
-      <div className="flex">
-        <div className="flex-1 pr-10">
-          <MeetingHeader {...meetingData} />
+      <Button 
+        onClick={() => navigate("/main")}
+        className="font-semibold text-xl mb-5">Your Logo</Button>
+      <div className="flex gap-12 items-start">
+        <div className="flex-1 pr-8">
+          <MeetingHeader data = {meetingData} />
           <div className="mt-10">
-            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-[10px] mb-4">TODO</div>
+            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-full mb-4">TODO</div>
             <TodoList todoItems={todoItems} />
           </div>
         </div>
-        <div className="w-px h-auto bg-gray-300 mx-10" />
-        <div className="flex-1 pl-10">
-          <MeetingContent content={meetingContent} />
-        </div>
+        <div className="w-px h-auto bg-gray-300 h-[800px]" />
+          <div className="flex-1 pl-5">
+            <MeetingContent content={<span className="text-base">{meetingContent}</span>} />
+          </div>
       </div>
     </div>
+    
   );
 };
 
