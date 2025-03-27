@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import OnMeeting from './components/OnMeeting';
 import CodeInput from "./components/CodeInput";
 import CodeCreate from "./components/CodeCreate";
 import MeetingDetail from "./components/MeetingDetail";
@@ -13,10 +14,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/meetingdetail" element={<MeetingDetail />} />  
+        <Route path="/onmeeting" element={<OnMeeting />} />  
         <Route path="/code-create" element={<CodeCreate />} />
         <Route path="/code-input" element={<CodeInput />} />
-        
-        <Route path="/meeting/:code" element={<MeetingDetail />} />
 
         <Route path="/main" element={<Main />} /> 
         <Route path="/signup" element={<SignUp />} />

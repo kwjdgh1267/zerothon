@@ -30,7 +30,7 @@ const CodeInput = () => {
           placeholder="Enter your code...."
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          className="border-b border-black focus:outline-none text-lg placeholder-gray-400 w-[300px] text-2xl"
+          className="border-b border-black focus:outline-none text-lg placeholder-gray-400 w-[300px] text-3xl"
         />
       </div>
 
@@ -40,7 +40,7 @@ const CodeInput = () => {
             onClick={() => navigate("/onmeeting")}
             className="w-48 h-[60px] bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]"
         >
-            <span className="text-white text-[20px]">회의하러 가기</span>
+            <span className="text-white text-[25px]">회의하러 가기</span>
         </Button>
       </div>
     </div>

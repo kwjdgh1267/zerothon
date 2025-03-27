@@ -3,8 +3,10 @@ import MeetingHeader from "./MeetingHeader";
 import TodoList from "./TodoList";
 import MeetingContent from "./MeetingContent";
 import { Separator } from "./ui/separator";
+import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 Hook
 
 const MeetingDetail = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
   // 여기 나중에 백엔드에서 받아올 정보들
   const meetingData = {
     date: "26.03.25",
