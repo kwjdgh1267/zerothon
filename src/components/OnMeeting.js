@@ -15,57 +15,47 @@ const OnMeeting = () => {
 
     return (
         <main className="bg-white flex flex-col items-center justify-between min-h-screen py-10 px-10">
-        <div className="w-full max-w-[1440px] relative flex flex-col items-center">
-            {/* Header */}
-            <header className="w-full">
-            <div className="w-full">
+            <div className="w-full max-w-[1440px] relative flex flex-col items-center">
+                {/* Header */}
+                <header className="w-full">
+                    <div className="w-full">
+                        <Button 
+                            onClick={() => navigate("/main")}
+                            className="font-semibold text-xl mb-16">WSC</Button>
+                    </div>
+                </header>
+
+                {/* Meeting title */}
+                <h2 className="mt-10 mb-12 [font-family:'Poppins-Bold',Helvetica] font-bold text-black text-[31px]">
+                    회의 중...
+                </h2>
+
+                {/* Participants grid */}
+                <div className="grid grid-cols-2 gap-8 mb-auto">
+                    {participants.map((participant) => (
+                        <Card
+                            key={participant.id}
+                            className="w-[168px] h-[168px] rounded-[10px] bg-[#f3f3f3] opacity-80 relative"
+                        >
+                            <CardContent className="p-0 h-full flex items-center justify-center">
+                                <div className={`absolute inset-0 ${participant.bgColor} rounded-[84px]`}></div>
+                                <p className="relative z-10 [font-family:'Poppins-Regular',Helvetica] font-normal text-black text-[28px]">
+                                    {participant.name}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* End meeting button */}
                 <Button 
-                onClick={() => navigate("/main")}
-                className="font-semibold text-xl mb-16">WSC</Button>
+                    onClick={() => navigate("/meetingdetail")}
+                    className="mt-20 w-[179px] h-[60px] bg-[#f7b3b3] rounded-[5px] hover:bg-[#e9a5a5]">
+                    <span className="[font-family:'Poppins-Regular',Helvetica] font-normal text-white text-[25px]">
+                        회의 종료
+                    </span>
+                </Button>
             </div>
-            </header>
-
-            {/* 회의 이름 입력 */}
-            <div className="mb-10">
-                <label className="text-xl font-semibold mr-2">회의이름 :</label>
-                <input
-                type="text"
-                placeholder="회의 이름을 입력하세요..."
-                className="border-b border-gray-400 focus:outline-none text-gray-500 text-lg placeholder-gray-400"
-                />
-            </div>
-            
-            {/* Meeting title */}
-            <h2 className="mt-10 mb-12 [font-family:'Poppins-Bold',Helvetica] font-bold text-black text-[31px]">
-            회의 중...
-            </h2>
-
-            {/* Participants grid */}
-            <div className="grid grid-cols-2 gap-8 mb-auto">
-            {participants.map((participant) => (
-                <Card
-                key={participant.id}
-                className="w-[168px] h-[168px] rounded-[10px] bg-[#f3f3f3] opacity-80 relative"
-                >
-                <CardContent className="p-0 h-full flex items-center justify-center">
-                    <div className={`absolute inset-0 ${participant.bgColor} rounded-[84px]`}></div>
-                    <p className="relative z-10 [font-family:'Poppins-Regular',Helvetica] font-normal text-black text-[28px]">
-                    {participant.name}
-                    </p>
-                </CardContent>
-                </Card>
-            ))}
-            </div>
-
-            {/* End meeting button */}
-            <Button 
-                onClick={() => navigate("/meetingdetail")}
-                className="mt-20 w-[179px] h-[60px] bg-[#f7b3b3] rounded-[5px] hover:bg-[#e9a5a5]">
-                <span className="[font-family:'Poppins-Regular',Helvetica] font-normal text-white text-[25px]">
-                    회의 종료
-                </span>
-            </Button>
-        </div>
         </main>
     );
 }

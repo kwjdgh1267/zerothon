@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
 const Main = () => {
-  const [meetings, setMeetings] = useState([]);
+  const [meetings, setMeetings] = useState([]);  // ✅ 초기값 빈 배열로 설정
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -21,11 +21,14 @@ const Main = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer "+ token  // 토큰을 헤더에 포함
+            "Authorization": "Bearer " + token  // 토큰을 헤더에 포함
           }
         });
+        
+        // ✅ 데이터가 null이거나 비어있으면 빈 배열로 처리
         const data = await response.json();
-        setMeetings(data);
+        console.log("서버 응답:", data);  // 응답 데이터 확인
+        setMeetings(data || []);  // 데이터가 없을 경우 빈 배열로 처리
       } catch (error) {
         console.error("Error fetching meetings:", error);
         setError("회의 정보를 가져오는 중 오류가 발생했습니다.");
@@ -48,15 +51,15 @@ const Main = () => {
         <div className="flex items-start gap-40">
           <div className="w-2/3 max-w-[700px]">
             {meetings.length > 0 ? (
-              meetings.map((meeting) => (
-                <React.Fragment key={meeting.id}>
+              meetings.map((meeting, index) => (
+                <React.Fragment key={meeting.objectId || index}>  {/* 고유 키 설정 */}
                   <div className="grid grid-cols-[250px_1fr] items-center py-6">
+                  <div className="font-bold text-black text-[31px] mr-32">
+                    {new Date(meeting.createdAt).toISOString().split("T")[0].replace(/-/g, ".")}
+                  </div>
                     <div className="font-bold text-black text-[31px] mr-32">
-                      {meeting.date}
-                    </div>
-                    <div className="font-bold text-black text-[31px] mr-32">
-                      <Link to={`/meeting/${meeting.id}`} className="text-black hover:underline">
-                        {meeting.name}
+                      <Link to={`/meeting/${meeting.objectId}`} className="text-black hover:underline">
+                        {meeting.title}  {/* 제목 표시 */}
                       </Link>
                     </div>
                   </div>

@@ -11,13 +11,27 @@ const CodeInput = () => {
     if (code.trim() === "") return;
 
     try {
+      // 토큰 가져오기
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인 토큰이 없습니다. 다시 로그인하세요.");
+        return;
+      }
+
       // 입력한 코드가 DB에 존재하는지 백엔드에서 확인
-      const response = await axios.get(
-        process.env.REACT_APP_BACKEND_URL || "http://localhost:8080/code"
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:8080/meeting/join"}?code=${code}`,
+        {},  // POST 요청 본문을 비워둠
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // 토큰을 헤더에 포함
+          },
+        }
       );
 
       // 백엔드에서 직접 코드 값을 비교
-      if (response.data === code) {
+      if (response.data === "회의 참가 완료!") {
         alert("성공.");
         navigate(`/onmeeting`);
       } else {
