@@ -12,16 +12,16 @@ const CodeInput = () => {
 
     try {
       // 입력한 코드가 DB에 존재하는지 백엔드에서 확인
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:8080"}/api/verify-code`,
-        { code }
+      const response = await axios.get(
+        process.env.REACT_APP_BACKEND_URL || "http://localhost:8080/code"
       );
-      
-      // 백엔드에서 { valid: true } 형태로 응답한다고 가정
-      if (response.data.valid) {
-        navigate(`/meeting/${code}`); //백으로부터 양식 받아야 함함
-      } else {
+
+      // 백엔드에서 직접 코드 값을 비교
+      if (response.data === code) {
         alert("성공.");
+        navigate(`/onmeeting`);
+      } else {
+        alert("코드가 유효하지 않습니다.");
       }
     } catch (error) {
       console.error("코드 확인 중 에러 발생:", error);

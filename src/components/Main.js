@@ -5,31 +5,61 @@ import React, { useEffect, useState } from "react";
 
 const Main = () => {
   const [meetings, setMeetings] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/meetings") // 백엔드 API 호출
-      .then((response) => response.json())
-      .then((data) => setMeetings(data)) // 받아온 데이터를 상태로 저장
-      .catch((error) => console.error("Error fetching meetings:", error));
+    const fetchMeetings = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("로그인 토큰이 없습니다. 다시 로그인하세요.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/meetings", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await response.json();
+
+        // 토큰에서 userId 추출
+        const userId = parseInt(token.split("-").pop());
+
+        // 로그인한 사용자 ID와 일치하는 미팅만 필터링
+        const userMeetings = data.filter((meeting) => meeting.userId === userId);
+        setMeetings(userMeetings);
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+        setError("회의 정보를 가져오는 중 오류가 발생했습니다.");
+      }
+    };
+
+    fetchMeetings();
   }, []);
 
   return (
     <div className="bg-white flex flex-row justify-center w-full">
       <div className="bg-white w-full max-w-[1440px] min-h-[900px] relative p-10">
         {/* Logo */}
-        <div className="[font-family: 'Poppins-SemiBold', Helvetica] font-semibold text-black text-xl mb-16">
+        <div className="font-semibold text-black text-xl mb-16">
           Your Logo
         </div>
+
+        {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
+
         <div className="flex items-start gap-40">
           <div className="w-2/3 max-w-[700px]">
             {meetings.length > 0 ? (
               meetings.map((meeting) => (
                 <React.Fragment key={meeting.id}>
                   <div className="grid grid-cols-[250px_1fr] items-center py-6">
-                    <div className="[font-family: 'Poppins-Bold', Helvetica] font-bold text-black text-[31px] mr-32">
+                    <div className="font-bold text-black text-[31px] mr-32">
                       {meeting.date}
                     </div>
-                    <div className="[font-family: 'Poppins-Bold', Helvetica] font-bold text-black text-[31px] mr-32">
+                    <div className="font-bold text-black text-[31px] mr-32">
                       <Link to={`/meeting/${meeting.id}`} className="text-black hover:underline">
                         {meeting.name}
                       </Link>
@@ -47,7 +77,7 @@ const Main = () => {
           <div className="flex flex-col items-end mt-32 gap-8">
             <Link to="/code-input">
               <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-                <span className="[font-family:'Poppins-Regular', Helvetica] font-normal text-white text-[25px]">
+                <span className="text-white text-[25px]">
                   코드 입력하기
                 </span>
               </Button>
@@ -55,7 +85,7 @@ const Main = () => {
 
             <Link to="/code-create">
               <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-                <span className="[font-family:'Poppins-Regular', Helvetica] font-normal text-white text-[25px]">
+                <span className="text-white text-[25px]">
                   코드 생성하기
                 </span>
               </Button>
