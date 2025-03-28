@@ -39,6 +39,7 @@ const CodeCreate = () => {
 
   return (
     <div className="bg-white flex flex-col justify-between items-center w-full h-screen p-10">
+
       {/* 상단 */}
       <div className="w-full">
         <Button 
@@ -48,6 +49,7 @@ const CodeCreate = () => {
           Your Logo
         </Button>
       </div>
+
 
       {/* 중앙 영역 */}
       <div className="flex flex-col items-center justify-center h-[600px]">

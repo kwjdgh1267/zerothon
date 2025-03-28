@@ -1,9 +1,11 @@
+
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import MeetingHeader from "./MeetingHeader";
 import TodoList from "./TodoList";
 import MeetingContent from "./MeetingContent";
 import { useNavigate, useParams } from "react-router-dom";
+
 
 const MeetingDetail = () => {
   const { id } = useParams();
@@ -65,6 +67,7 @@ const MeetingDetail = () => {
         </div>
       </div>
     </div>
+    
   );
 };
 

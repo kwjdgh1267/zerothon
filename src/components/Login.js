@@ -51,8 +51,9 @@ const Login = () => {
     return (
         <div className="bg-white flex flex-row justify-center w-full min-h-screen">
             <div className="bg-white w-full max-w-[1440px] relative py-[30px] px-[42px]">
-                <div className="font-semibold text-black text-xl">Your Logo</div>
 
+                <div className="font-semibold text-black text-xl">WSC</div>
+            
                 <div className="flex flex-row mt-[29px] px-[69px]">
                     <Card className="w-[505px] h-[757px] rounded-[10px] border-[0.5px] border-solid border-[#868686] shadow-lg">
                         <CardContent className="p-[35px]">

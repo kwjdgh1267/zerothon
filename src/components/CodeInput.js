@@ -39,6 +39,7 @@ const CodeInput = () => {
         >
           Your Logo
         </Button>
+
       </div>
 
       {/* 중앙 입력란 */}
