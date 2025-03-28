@@ -8,41 +8,51 @@ import React, { useState } from "react";
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");  // 이메일 상태
+    const [id, setEmail] = useState("");  // 이메일 상태
     const [password, setPassword] = useState("");  // 비밀번호 상태
     const [errorMessage, setErrorMessage] = useState("");  // 에러 메시지 상태
 
     const handleLogin = async () => {
         try {
-            const response = await fetch("http://localhost:8080/users", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
+            const response = await fetch("http://localhost:8080/sign-in", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ id, password })
             });
-            const users = await response.json();
-            
-            // 사용자 찾기
-            const user = users.find(
-                (user) => user.email === email && user.password === password
-            );
-
-            if (user) {
-                // 로그인 성공 시 JWT 토큰 생성
-                const token = `Bearer fake-jwt-token-${user.id}`;
-                localStorage.setItem("token", token); // 로컬 스토리지에 토큰 저장
-                navigate("/main"); // 메인 페이지로 이동
-            } else {
-                setErrorMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+        
+            // 응답이 성공적이지 않을 경우 처리
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`로그인 요청에 실패했습니다: ${errorMessage}`);
             }
+    
+            // 응답이 없거나 비어있다면 예외 처리
+            const data = await response.json();
+            console.log(data)
+            if (!data.accessToken) {
+                throw new Error("로그인 실패: 토큰이 없습니다.");
+            }
+    
+            // 로그인 성공 처리
+            const token = data.accessToken;
+            localStorage.setItem("token", token);
+            navigate("/main");
         } catch (error) {
-            setErrorMessage("로그인 중 오류가 발생했습니다.");
+            setErrorMessage(error.message);
+            console.error("로그인 오류:", error.message);
         }
     };
+    
+    
 
     return (
         <div className="bg-white flex flex-row justify-center w-full min-h-screen">
             <div className="bg-white w-full max-w-[1440px] relative py-[30px] px-[42px]">
                 <div className="font-semibold text-black text-xl">Your Logo</div>
-                
+
                 <div className="flex flex-row mt-[29px] px-[69px]">
                     <Card className="w-[505px] h-[757px] rounded-[10px] border-[0.5px] border-solid border-[#868686] shadow-lg">
                         <CardContent className="p-[35px]">
@@ -58,7 +68,7 @@ const Login = () => {
                                 <Input
                                     className="h-[59px] text-sm font-light"
                                     placeholder="Enter your user Email"
-                                    value={email}
+                                    value={id}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
@@ -94,16 +104,6 @@ const Login = () => {
                             </Button>
 
                             {errorMessage && <div className="text-red-500 mt-2">{errorMessage}</div>}
-
-                            <div className="flex justify-center gap-2 mt-[55px]">
-                                <span className="font-light text-[#7d7d7d] text-base">Don't have an Account?</span>
-                                <button
-                                    className="font-semibold text-[#7d7d7d] text-base"
-                                    onClick={() => navigate("/signup")}
-                                >
-                                    Register
-                                </button>
-                            </div>
                         </CardContent>
                     </Card>
                 </div>

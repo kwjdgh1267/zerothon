@@ -25,6 +25,16 @@ const OnMeeting = () => {
             </div>
             </header>
 
+            {/* 회의 이름 입력 */}
+            <div className="mb-10">
+                <label className="text-xl font-semibold mr-2">회의이름 :</label>
+                <input
+                type="text"
+                placeholder="회의 이름을 입력하세요..."
+                className="border-b border-gray-400 focus:outline-none text-gray-500 text-lg placeholder-gray-400"
+                />
+            </div>
+            
             {/* Meeting title */}
             <h2 className="mt-10 mb-12 [font-family:'Poppins-Bold',Helvetica] font-bold text-black text-[31px]">
             회의 중...

@@ -17,20 +17,15 @@ const Main = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8080/meetings", {
+        const response = await fetch("http://localhost:8080/meeting", {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer "+ token  // 토큰을 헤더에 포함
           }
         });
         const data = await response.json();
-
-        // 토큰에서 userId 추출
-        const userId = parseInt(token.split("-").pop());
-
-        // 로그인한 사용자 ID와 일치하는 미팅만 필터링
-        const userMeetings = data.filter((meeting) => meeting.userId === userId);
-        setMeetings(userMeetings);
+        setMeetings(data);
       } catch (error) {
         console.error("Error fetching meetings:", error);
         setError("회의 정보를 가져오는 중 오류가 발생했습니다.");
