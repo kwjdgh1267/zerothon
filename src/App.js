@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import OnMeeting from './components/OnMeeting';
 import CodeInput from "./components/CodeInput";
 import CodeCreate from "./components/CodeCreate";
@@ -12,7 +12,7 @@ import './App.css'; // Tailwind를 적용하기 위해 유지
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route path="/meetingdetail" element={<MeetingDetail />} />  
         <Route path="/onmeeting" element={<OnMeeting />} />  
@@ -20,10 +20,11 @@ function App() {
         <Route path="/code-input" element={<CodeInput />} />
 
         <Route path="/main" element={<Main />} /> 
+        <Route path="/" element={<Login />} />  {/* /login 경로로 수정 */}
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/" element={<Login />} />
+        <Route path="/meeting/:id" element={<MeetingDetail />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
