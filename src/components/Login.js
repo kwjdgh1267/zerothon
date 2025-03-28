@@ -8,35 +8,44 @@ import React, { useState } from "react";
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState("");  // 이메일 상태
+    const [id, setEmail] = useState("");  // 이메일 상태
     const [password, setPassword] = useState("");  // 비밀번호 상태
     const [errorMessage, setErrorMessage] = useState("");  // 에러 메시지 상태
-
     const handleLogin = async () => {
         try {
-            const response = await fetch("http://localhost:8080/users", {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
+            const response = await fetch("http://localhost:8080/sign-in", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify({ id, password })
             });
-            const users = await response.json();
-            
-            // 사용자 찾기
-            const user = users.find(
-                (user) => user.email === email && user.password === password
-            );
-
-            if (user) {
-                // 로그인 성공 시 JWT 토큰 생성
-                const token = `Bearer fake-jwt-token-${user.id}`;
-                localStorage.setItem("token", token); // 로컬 스토리지에 토큰 저장
-                navigate("/main"); // 메인 페이지로 이동
-            } else {
-                setErrorMessage("이메일 또는 비밀번호가 잘못되었습니다.");
+        
+            // 응답이 성공적이지 않을 경우 처리
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`로그인 요청에 실패했습니다: ${errorMessage}`);
             }
+    
+            // 응답이 없거나 비어있다면 예외 처리
+            const data = await response.json();
+            console.log(data)
+            if (!data.accessToken) {
+                throw new Error("로그인 실패: 토큰이 없습니다.");
+            }
+    
+            // 로그인 성공 처리
+            const token = data.accessToken;
+            localStorage.setItem("token", token);
+            navigate("/main");
         } catch (error) {
-            setErrorMessage("로그인 중 오류가 발생했습니다.");
+            setErrorMessage(error.message);
+            console.error("로그인 오류:", error.message);
         }
     };
+
+    
 
     return (
         <div className="bg-white flex flex-row justify-center w-full min-h-screen">
@@ -58,7 +67,7 @@ const Login = () => {
                                 <Input
                                     className="h-[59px] text-sm font-light"
                                     placeholder="Enter your user Email"
-                                    value={email}
+                                    value={id}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
@@ -78,9 +87,9 @@ const Login = () => {
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
-                                            <EyeOffIcon className="absolute right-0.5 top-7 -translate-y-1/2 w-[21px] h-[21px] text-gray-500" />
+                                            <EyeOffIcon className="absolute right-0.5 top-1 -translate-y-1/2 w-[21px] h-[21px] text-gray-500" />
                                         ) : (
-                                            <EyeIcon className="absolute right-0.5 top-7 -translate-y-1/2 w-[21px] h-[21px] text-gray-500" />
+                                            <EyeIcon className="absolute right-0.5 top-1 -translate-y-1/2 w-[21px] h-[21px] text-gray-500" />
                                         )}
                                     </button>
                                 </div>
@@ -106,6 +115,15 @@ const Login = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Right side image */}
+                    <div className="flex-1 ml-9 flex items-center justify-center">
+                        <img
+                            src="login.png"
+                            alt="Meeting notes visual"
+                            className="w-full max-w-[500px] h-auto object-contain"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
