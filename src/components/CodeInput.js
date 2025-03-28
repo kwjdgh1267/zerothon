@@ -1,15 +1,46 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 
 const CodeInput = () => {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    // 여기서 입력된 코드로 페이지 이동 로직 작성
-    if (code.trim() !== "") {
-      navigate(`/meeting/${code}`);
+  const handleSubmit = async () => {
+    if (code.trim() === "") return;
+
+    try {
+      // 토큰 가져오기
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인 토큰이 없습니다. 다시 로그인하세요.");
+        return;
+      }
+
+      // 입력한 코드가 DB에 존재하는지 백엔드에서 확인
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:8080/meeting/join"}?code=${code}`,
+        {},  // POST 요청 본문을 비워둠
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // 토큰을 헤더에 포함
+          },
+        }
+      );
+
+      // 백엔드에서 직접 코드 값을 비교
+      if (response.data === "회의 참가 완료!") {
+        alert("성공.");
+        navigate(`/onmeeting`);
+      } else {
+        alert("코드가 유효하지 않습니다.");
+      }
+    } catch (error) {
+      console.error("코드 확인 중 에러 발생:", error);
+      alert("코드를 확인하는 중 오류가 발생했습니다. 다시 시도해 주세요.");
     }
   };
 

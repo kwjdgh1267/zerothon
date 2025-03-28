@@ -43,7 +43,7 @@ const Main = () => {
       <div className="bg-white w-full max-w-[1440px] min-h-[900px] relative p-10">
         {/* Logo */}
         <div className="font-semibold text-black text-xl mb-16">
-          Your Logo
+          WSC
         </div>
 
         {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
