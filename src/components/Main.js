@@ -1,64 +1,98 @@
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
-import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 Hook
-import React from "react";
+import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
 const Main = () => {
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const [meetings, setMeetings] = useState([]);  // ✅ 초기값 빈 배열로 설정
+  const [error, setError] = useState("");
 
-  // Meeting data for mapping
-  const meetings = [
-    {date: "2025.03.07" , name: "회의이름 1"},
-    {date: "2025.03.14", name: "회의이름 2"},
-    {date: "2025.03.23", name: "회의이름 3"},
-  ];
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("로그인 토큰이 없습니다. 다시 로그인하세요.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/meeting", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token  // 토큰을 헤더에 포함
+          }
+        });
+        
+        // ✅ 데이터가 null이거나 비어있으면 빈 배열로 처리
+        const data = await response.json();
+        console.log("서버 응답:", data);  // 응답 데이터 확인
+        setMeetings(data || []);  // 데이터가 없을 경우 빈 배열로 처리
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+        setError("회의 정보를 가져오는 중 오류가 발생했습니다.");
+      }
+    };
+
+    fetchMeetings();
+  }, []);
 
   return (
     <div className="bg-white flex flex-row justify-center w-full">
       <div className="bg-white w-full max-w-[1440px] min-h-[900px] relative p-10">
         {/* Logo */}
-        <div className="[font-family: 'Poppins-SemiBold', Helvetica] font-semibold text-black text-xl mb-16">
-          WSC
+        <div className="font-semibold text-black text-xl mb-16">
+          Your Logo
         </div>
+
+        {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
+
         <div className="flex items-start gap-40">
           <div className="w-2/3 max-w-[700px]">
-            {meetings.map((meeting, index) => (
-              <React.Fragment key={index}>
-                <div className="grid grid-cols-[250px_1fr] items-center py-6">
-                  <div className="[font-family: 'Poppins-Bold', Helvetica] font-bold text-black text-[31px] mr-32">
-                    {meeting.date}
+            {meetings.length > 0 ? (
+              meetings.map((meeting, index) => (
+                <React.Fragment key={meeting.objectId || index}>  {/* 고유 키 설정 */}
+                  <div className="grid grid-cols-[250px_1fr] items-center py-6">
+                  <div className="font-bold text-black text-[31px] mr-32">
+                    {new Date(meeting.createdAt).toISOString().split("T")[0].replace(/-/g, ".")}
                   </div>
-                  <div className="[font-family: 'Poppins-Bold', Helvetica] font-bold text-black text-[31px] mr-32">
-                    {meeting.name}
+                    <div className="font-bold text-black text-[31px] mr-32">
+                      <Link to={`/meeting/${meeting.objectId}`} className="text-black hover:underline">
+                        {meeting.title}  {/* 제목 표시 */}
+                      </Link>
+                    </div>
                   </div>
-                </div>
-                <Separator className="bg-black/10 h-[1.5px] mt-5" />
-              </React.Fragment>
-            ))}
+                  <Separator className="bg-black/10 h-[1.5px] mt-5" />
+                </React.Fragment>
+              ))
+            ) : (
+              <p className="text-black text-lg">회의가 없습니다.</p>
+            )}
           </div>
 
           {/* Action buttons */}
           <div className="flex flex-col items-end mt-32 gap-8">
-            <Button 
-            onClick={() => navigate("/code-input")}
-            className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-              <span className="[font-family:'Poppins-Regular', Helvetica] font-normal text-white text-[25px]">
-                코드 입력하기
-              </span>
-            </Button>
+            <Link to="/code-input">
+              <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
+                <span className="text-white text-[25px]">
+                  코드 입력하기
+                </span>
+              </Button>
+            </Link>
 
-            <Button 
-            onClick={() => navigate("/code-create")}
-            className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-              <span className="[font-family:'Poppins-Regular', Helvetica] font-normal text-white text-[25px]">
-                코드 생성하기
-              </span>
-            </Button>
+            <Link to="/code-create">
+              <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
+                <span className="text-white text-[25px]">
+                  코드 생성하기
+                </span>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Main;

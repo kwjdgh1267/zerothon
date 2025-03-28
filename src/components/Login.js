@@ -8,45 +8,50 @@ import React, { useState } from "react";
 const Login = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [id, setEmail] = useState("");  // 이메일 상태
-    const [password, setPassword] = useState("");  // 비밀번호 상태
-    const [errorMessage, setErrorMessage] = useState("");  // 에러 메시지 상태
-
-    const handleLogin = async () => {
-        try {
-            const response = await fetch("http://localhost:8080/sign-in", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify({ id, password })
-            });
-        
-            // 응답이 성공적이지 않을 경우 처리
-            if (!response.ok) {
-                const errorMessage = await response.text();
-                throw new Error(`로그인 요청에 실패했습니다: ${errorMessage}`);
-            }
-    
-            // 응답이 없거나 비어있다면 예외 처리
-            const data = await response.json();
-            console.log(data)
-            if (!data.accessToken) {
-                throw new Error("로그인 실패: 토큰이 없습니다.");
-            }
-    
-            // 로그인 성공 처리
-            const token = data.accessToken;
-            localStorage.setItem("token", token);
-            navigate("/main");
-        } catch (error) {
-            setErrorMessage(error.message);
-            console.error("로그인 오류:", error.message);
-        }
+    const [form, setForm] = useState({
+      id: '',
+      password: ''
+    });
+    const [errorMessage, setErrorMessage] = useState("");
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setForm((prev) => ({ ...prev, [name]: value }));
     };
-    
-    
+  
+    const handleLogin = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/sign-in", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", // 필요 시
+          body: JSON.stringify(form),
+        });
+  
+        if (!response.ok) {
+          throw new Error("로그인 요청 실패");
+        }
+  
+        const contentType = response.headers.get("content-type");
+        let data = null;
+  
+        if (contentType && contentType.includes("application/json")) {
+          data = await response.json();
+        } else {
+          data = {};
+        }
+  
+        if (!data.accessToken) {
+          throw new Error("로그인 실패: 토큰이 없습니다.");
+        }
+  
+        localStorage.setItem("token", data.accessToken);
+        navigate("/main");
+      } catch (err) {
+        setErrorMessage(err.message);
+        console.error("로그인 오류:", err.message);
+      }
+    };
 
     return (
         <div className="bg-white flex flex-row justify-center w-full min-h-screen">
@@ -67,10 +72,11 @@ const Login = () => {
                             <div className="mt-[48px]">
                                 <div className="font-normal text-black text-base mb-2">Email</div>
                                 <Input
+                                    name="id"
                                     className="h-[59px] text-sm font-light"
                                     placeholder="Enter your user Email"
-                                    value={id}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={form.id}
+                                    onChange={handleChange}
                                 />
                             </div>
 
@@ -78,11 +84,12 @@ const Login = () => {
                                 <div className="text-black text-base mb-2">Password</div>
                                 <div className="relative">
                                     <Input
+                                        name="password"
                                         type={showPassword ? "text" : "password"}
                                         className="h-[59px] text-sm font-light"
                                         placeholder="Enter your Password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        value={form.password}
+                                        onChange={handleChange}
                                     />
                                     <button
                                         className="absolute right-[28px] top-[50%] transform -translate-y-1/2"
