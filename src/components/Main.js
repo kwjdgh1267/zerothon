@@ -84,6 +84,7 @@ const Main = () => {
                       <Link
                         to={`/meeting/summary?code=${meeting.code}`}  // ✅ code 값을 URL에 포함
                         className="text-black hover:underline"
+                        onClick={() => localStorage.setItem("code", meeting.code)}  // ✅ 클릭 시 코드 저장
                       >
                         {meeting.title}
                       </Link>
