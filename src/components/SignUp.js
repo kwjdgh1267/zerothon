@@ -4,12 +4,19 @@ import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { signup } from "../api/auth";
 
 
 const SignUp = () => {
   const navigate = useNavigate(); // useNavigate 훅 사용
   const [showPassword, setShowPassword] = useState(false); // 추가
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 추가
+  const [form, setForm] = useState({
+    id: '',
+    name: '',
+    password: '',
+    confirmPassword: '',
+  });
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -17,6 +24,32 @@ const SignUp = () => {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleRegister = async () => {
+    console.log("✅ handleRegister 함수 실행됨!");
+    if (form.password !== form.confirmPassword) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    try {
+      await signup({
+        id: form.id,    //email
+        name: form.name,//username
+        password: form.password,
+      });
+      alert("회원가입 성공!");
+      navigate("/"); // 로그인 페이지로 이동
+    } catch (err) {
+      console.error(err);
+      alert("회원가입 실패");
+    }
   };
 
 
@@ -43,6 +76,9 @@ const SignUp = () => {
                     Email
                   </label>
                   <Input
+                    name="id"
+                    value={form.id}
+                    onChange={handleChange}
                     placeholder="Enter your email"
                     className="h-[59px] rounded-md border-[0.6px] border-solid border-[#282828] px-[16px] py-[17px] font-light text-[#ababab] text-sm mb-[25px]"
                   />
@@ -53,6 +89,9 @@ const SignUp = () => {
                     User name
                   </label>
                   <Input
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
                     placeholder="Enter your user name"
                     className="h-[59px] rounded-md border-[0.6px] border-solid border-[#282828] px-[16px] py-[17px] font-light text-[#ababab] text-sm mb-[25px]"
                   />
@@ -64,7 +103,10 @@ const SignUp = () => {
                   </label>
                   <div className="relative">
                     <Input
+                      name="password"
                       type={showPassword ? "text" : "password"}
+                      value={form.password}
+                      onChange={handleChange}
                       placeholder="Enter your Password"
                       className="h-[59px] rounded-md border-[0.6px] border-solid border-[#282828] px-[16px] py-[17px] font-light text-[#ababab] text-sm mb-[25px]"
                     />
@@ -87,7 +129,10 @@ const SignUp = () => {
                   </label>
                   <div className="relative">
                     <Input
+                      name="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
+                      value={form.confirmPassword}
+                      onChange={handleChange}
                       placeholder="Confrim your Password"
                       className="h-[59px] rounded-md border-[0.6px] border-solid border-[#282828] px-[16px] py-[17px] font-light text-[#ababab] text-sm mb-[25px]"
                     />
@@ -106,7 +151,8 @@ const SignUp = () => {
               </div>
 
               <Button className="w-full h-[57px] bg-[#f7b3b3] text-white rounded-md hover:bg-[#f7b3b3]/90 text-base font-medium"
-              onClick={() => navigate("/")}>
+              onClick={handleRegister}
+              >
                 Register
               </Button>
 

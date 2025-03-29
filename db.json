@@ -1,50 +1,39 @@
 {
-  "users": [
-    { "id": 1, "email": "user1@example.com", "password": "password1" },
-    { "id": 2, "email": "user2@example.com", "password": "password2" }
-  ],
-  "meetings": [
-    {
-      "id": 1,
-      "userId": 1,
-      "name": "Project Kickoff",
-      "date": "2025-03-30",
-      "summary": "프로젝트 진행 상황 점검 후 제품 개발, 생산 일정, 마케팅 전략에 대해 논의했습니다.",
-      "todo": {
-        "김지훈": "마케팅 전략 마무리 및 투자 유치 및 파트너십 논의",
-        "이수빈": "고객 피드백 반영 계획 수립 및 다음 회의 산정",
-        "박민수": "가격 정책과 프로모션 전략 재검토 및 고객 서비스 및 AS 정책 확정"
+    "users": [
+      { "id": 1, "email": "qwer", "password": "1234" },
+      { "id": 2, "email": "user2@example.com", "password": "password2" }
+    ],
+    "meetings": [
+      {
+        "objectId": "65fb2c3d9a8e4f001c23abcd",
+        "title": "주간 회의",
+        "code": "MEET123",
+        "host": "user123",
+        "participants": ["member1", "member2", "member3"],
+        "description": "이번 주 업무 논의",
+        "createdAt": "2025-03-29T12:00:00",
+        "updatedAt": "2025-03-29T12:30:00"
       }
-    },
-    {
-      "id": 2,
-      "userId": 1,
-      "name": "Weekly Sync",
-      "date": "2025-04-01",
-      "host": "최현우",
-      "summary": "서비스 개선 방안을 논의하고, 사용자 피드백을 반영하기 위한 방안을 설정했습니다.",
-      "todo": {
-        "최현우": "사용자 피드백 수집 및 분석",
-        "정수연": "개선안 문서화 및 팀 공유",
-        "박지민": "기술적 수정 사항 목록 작성 및 검토"
+    ],
+    "todos": [
+      {
+        "objectId": "65fb2c5e9a8e4f001c23bcde",
+        "meetingId": "65fb2c3d9a8e4f001c23abcd",
+        "content": "회의록 정리",
+        "asignee": "member1",
+        "status": false,
+        "createdAt": "2025-03-29T12:10:00",
+        "updatedAt": "2025-03-29T12:20:00"
+      },
+      {
+        "objectId": "65fb2c6f9a8e4f001c23cdef",
+        "meetingId": "65fb2c3d9a8e4f001c23abcd",
+        "content": "발표 자료 준비",
+        "asignee": "member2",
+        "status": true,
+        "createdAt": "2025-03-29T12:15:00",
+        "updatedAt": "2025-03-29T12:25:00"
       }
-    },
-    {
-      "id": 3,
-      "userId": 2,
-      "name": "Design Review",
-      "date": "2025-03-31",
-      "summary": "디자인 개선 사항을 논의하고 최종 디자인을 확정했습니다.",
-      "todo": {
-        "이승현": "디자인 피드백 반영",
-        "홍길동": "최종 디자인 발표 자료 작성",
-        "김민수": "디자인 관련 요구사항 정리"
-      }
-    }
-  ],
-  "code": "Xj38Ert4$%T1",
-  "__routes": {
-    "/api/meetings": "/meetings",
-    "/api/meetings/:id": "/meetings/:id"
+    ]
   }
-}
+  

@@ -47,7 +47,7 @@ const createCode = async () => {
           onClick={() => navigate("/main")}
           className="font-semibold text-xl mb-16"
         >
-          Your Logo
+          WSC
         </Button>
       </div>
 
@@ -67,7 +67,7 @@ const createCode = async () => {
             onClick={createCode}
             className="ml-4 h-[50px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]"
           >
-            코드 생성하기
+            <span className="text-white text-[25px]">코드 생성하기</span>
           </Button>
         </div>
 

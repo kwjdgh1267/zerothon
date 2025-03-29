@@ -8,7 +8,10 @@ const CodeInput = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    if (code.trim() === "") return;
+    if (code.trim() === "") {
+      alert("코드를 입력해주세요.");
+      return;
+    }
 
     try {
       // 토큰 가져오기
@@ -21,7 +24,7 @@ const CodeInput = () => {
       // 입력한 코드가 DB에 존재하는지 백엔드에서 확인
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL || "http://localhost:8080/meeting/join"}?code=${code}`,
-        {},  // POST 요청 본문을 비워둠
+        {},  // POST 요청 본문 비워둠
         {
           headers: {
             "Content-Type": "application/json",
@@ -30,9 +33,11 @@ const CodeInput = () => {
         }
       );
 
-      // 백엔드에서 직접 코드 값을 비교
-      if (response.data === "회의 참가 완료!") {
-        alert("성공.");
+      // 백엔드에서 성공 여부 확인
+      if (response.status === 200 && response.data === "회의 참가 완료!") {
+        alert("회의에 성공적으로 참가했습니다.");
+        // 로컬 스토리지에 회의 코드 저장
+        localStorage.setItem("meetingCode", code);
         navigate(`/onmeeting`);
       } else {
         alert("코드가 유효하지 않습니다.");
@@ -49,10 +54,7 @@ const CodeInput = () => {
       <div className="w-full">
         <Button 
           onClick={() => navigate("/main")}
-          className="font-semibold text-xl mb-16"
-        >
-          Your Logo
-        </Button>
+          className="font-semibold text-xl mb-16">WSC</Button>
       </div>
 
       {/* 중앙 입력란 */}
@@ -70,7 +72,7 @@ const CodeInput = () => {
       {/* 하단 버튼 */}
       <div className="flex justify-center mt-10">
         <Button
-          onClick={handleSubmit}
+          onClick={handleSubmit}  // ✅ 수정: handleSubmit 함수 호출
           className="w-48 h-[60px] bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]"
         >
           <span className="text-white text-[25px]">회의하러 가기</span>
