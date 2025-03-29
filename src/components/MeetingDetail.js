@@ -1,72 +1,102 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import MeetingHeader from "./MeetingHeader";
 import TodoList from "./TodoList";
 import MeetingContent from "./MeetingContent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const MeetingDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const code = new URLSearchParams(location.search).get("code");
 
-  const meetingData = {
-    date: "26.03.25",
-    title: "회의이름 1",
-    host: "Name1",
-    participants: ["Name2", "Name3", "Name4"],
+  const [meetingData, setMeetingData] = useState(null);
+  const [todoItems, setTodoItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // TODO 상태 업데이트 함수
+  const handleUpdateTodo = (updatedItem) => {
+    setTodoItems((prevItems) =>
+      prevItems.map((item) =>
+        item.objectId === updatedItem.objectId ? updatedItem : item
+      )
+    );
   };
 
-  const todoItems = [
-    { topic: "[주제 1] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name3" },
-    { topic: "[주제 2] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name2" },
-    { topic: "[주제 3] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name4" },
-    { topic: "[주제 4] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
-    { topic: "[주제 2] Anim nostrud in laboris minim voluptate commodo.", assignee: "Name1" },
-  ];
+  useEffect(() => {
+    const fetchMeetingDetail = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("로그인 토큰이 없습니다.");
+        }
 
-  const meetingContent = `
-[주제 1] 프로젝트 진행 상황
-- 제품 개발: 기능 테스트 완료, 최종 디자인 확정
-- 생산 일정: 4월 초 양산 시작 예정, 공급망 안정화 작업 진행 중
-- 법적 검토: 특허 및 상표 등록 절차 완료
+        if (!code) {
+          throw new Error("회의 코드가 없습니다.");
+        }
 
-[주제 2] 마케팅 전략 논의
-- 목표 시장 분석: 20~30대 주요 타겟층, 초기 고객 확보 방안 검토
-- 온라인 홍보: SNS 마케팅 캠페인 기획, 인플루언서 협업 검토
-- 오프라인 홍보: 체험형 이벤트 진행 검토, 팝업스토어 가능성 논의
+        const response = await fetch(`http://localhost:8080/meeting/summary?code=${code}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        });
 
-[주제 3] 출시 일정 및 목표
-- 4월 10일 사전 예약 시작, 4월 25일 공식 출시
-- 출시 후 3개월 내 5만 개 판매 목표 설정
-- 고객 피드백 반영을 위한 설문조사 및 데이터 수집 계획 수립
+        if (!response.ok) {
+          const errorMessage = await response.text();
+          throw new Error(`회의 정보를 불러올 수 없습니다. 오류: ${errorMessage}`);
+        }
 
-[주제 4] 기타 논의 사항
-- 가격 정책 및 프로모션 전략 재검토
-- 고객 서비스 및 AS 정책 확정
-- 투자 유치 및 파트너십 확대 방안 논의
+        const data = await response.json();
+        console.log("받은 데이터:", data);
 
-다음 회의: 2025년 4월 1일, 최종 마케팅 자료 점검 및 사전 예약 전략 확정 예정
-`;
+        if (data) {
+          setMeetingData(data);
+          setTodoItems(data.todos || []);
+        } else {
+          throw new Error("회의 데이터를 불러올 수 없습니다.");
+        }
+      } catch (err) {
+        console.error("데이터 로드 중 오류:", err.message);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMeetingDetail();
+  }, [code]);
+
+  if (loading) return <div>로딩 중...</div>;
+  if (error) return <div>{error}</div>;
+  if (!meetingData) return <div>회의 정보를 찾을 수 없습니다.</div>;
 
   return (
     <div className="bg-white w-full min-h-screen px-10 pt-10">
-      <Button 
-        onClick={() => navigate("/main")}
-        className="font-semibold text-xl mb-5">WSC</Button>
+      <Button onClick={() => navigate("/main")} className="font-semibold text-xl mb-5">
+        WSC
+      </Button>
       <div className="flex gap-12 items-start">
         <div className="flex-1 pr-8">
-          <MeetingHeader data = {meetingData} />
+          <MeetingHeader data={{
+            date: new Date(meetingData.createdAt).toISOString().split("T")[0].replace(/-/g, "."),
+            title: meetingData.title,
+            host: meetingData.host,
+            participants: meetingData.participants || [],
+          }} />
           <div className="mt-10">
             <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-full mb-4">TODO</div>
-            <TodoList todoItems={todoItems} />
+            <TodoList todoItems={todoItems} onUpdate={handleUpdateTodo} />
           </div>
         </div>
         <div className="w-px bg-gray-300 h-[750px]" />
-          <div className="flex-1 pl-5">
-            <MeetingContent content={<span className="text-base">{meetingContent}</span>} />
-          </div>
+        <div className="flex-1 pl-5">
+          <MeetingContent content={<span className="text-base">{meetingData.description || "회의 내용이 없습니다."}</span>} />
+        </div>
       </div>
     </div>
-    
   );
 };
 

@@ -47,7 +47,7 @@ const createCode = async () => {
           onClick={() => navigate("/main")}
           className="font-semibold text-xl mb-16"
         >
-          Your Logo
+          WSC
         </Button>
       </div>
 

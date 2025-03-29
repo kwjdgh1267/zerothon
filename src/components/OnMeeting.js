@@ -1,13 +1,16 @@
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import { useNavigate } from "react-router-dom"; // 페이지 이동을 위한 Hook
-import React from "react";
+import MeetingLoading from "./MeetingLoading"; // 추가
+import React, { useState } from "react";
+
 //import useWebSocket from '../hooks/useWebSocket';
 import useFakeWebSocket from "../hooks/useFakeWebSocket"; // 실제로는 나중에 useWebSocket으로 대체
 
 
 const OnMeeting = () => {
     const navigate = useNavigate(); // useNavigate 훅 사용
+    const [loading, setLoading] = useState(false); // 로딩 상태
     const participants = useFakeWebSocket(); // 여기로 실시간 받는 구조
     // Meeting participants data
     // const participants = [
@@ -16,6 +19,19 @@ const OnMeeting = () => {
     //     { id: 3, name: "Name3", bgColor: "bg-[#d5eaff]" },
     //     { id: 4, name: "Name4", bgColor: "bg-[#fffade]" },
     // ];
+
+    const handleEndMeeting = () => {
+        setLoading(true); // 로딩 시작
+    
+        // 3초 후 MeetingDetail 페이지로 이동
+        setTimeout(() => {
+          navigate("/meetingdetail");
+        }, 3000);
+      };
+    
+      if (loading) {
+        return <MeetingLoading />;
+      }
 
     return (
         <main className="bg-white flex flex-col items-center justify-between min-h-screen py-10 px-10">
@@ -55,7 +71,8 @@ const OnMeeting = () => {
 
             {/* End meeting button */}
             <Button 
-                onClick={() => navigate("/meetingdetail")}
+                // onClick={() => navigate("/meetingdetail")}
+                onClick={handleEndMeeting}
                 className="mt-20 w-[179px] h-[60px] bg-[#f7b3b3] rounded-[5px] hover:bg-[#e9a5a5]">
                 <span className="[font-family:'Poppins-Regular',Helvetica] font-normal text-white text-[25px]">
                     회의 종료

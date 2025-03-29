@@ -14,6 +14,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/meeting/:id" element={<MeetingDetail />} />
         <Route path="/meetingdetail" element={<MeetingDetail />} />  
         <Route path="/onmeeting" element={<OnMeeting />} />  
         <Route path="/code-create" element={<CodeCreate />} />

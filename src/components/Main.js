@@ -4,11 +4,14 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
 const Main = () => {
-  const [meetings, setMeetings] = useState([]);  // ✅ 초기값 빈 배열로 설정
+  const [meetings, setMeetings] = useState([]);
   const [error, setError] = useState("");
+  const [deleteMode, setDeleteMode] = useState(false); //삭제 관련
+  const [selectedIds, setSelectedIds] = useState([]); //삭제 관련
 
   useEffect(() => {
     const fetchMeetings = async () => {
+
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -21,14 +24,13 @@ const Main = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token  // 토큰을 헤더에 포함
+            "Authorization": "Bearer " + token
           }
         });
-        
-        // ✅ 데이터가 null이거나 비어있으면 빈 배열로 처리
+
         const data = await response.json();
-        console.log("서버 응답:", data);  // 응답 데이터 확인
-        setMeetings(data || []);  // 데이터가 없을 경우 빈 배열로 처리
+        console.log("서버 응답:", data);
+        setMeetings(data || []);
       } catch (error) {
         console.error("Error fetching meetings:", error);
         setError("회의 정보를 가져오는 중 오류가 발생했습니다.");
@@ -37,6 +39,24 @@ const Main = () => {
 
     fetchMeetings();
   }, []);
+
+  const handleConfirmDelete = () => {
+    if (selectedIds.length === 0) {
+      alert("삭제할 회의를 선택하세요!");
+      return;
+    }
+
+    const confirmed = window.confirm("정말 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    const updatedMeetings = meetings.filter(
+      (meeting) => !selectedIds.includes(meeting.objectId)
+    );
+
+    setMeetings(updatedMeetings);
+    setSelectedIds([]);
+    setDeleteMode(false);
+  };
 
   return (
     <div className="bg-white flex flex-row justify-center w-full">
@@ -52,16 +72,35 @@ const Main = () => {
           <div className="w-2/3 max-w-[700px]">
             {meetings.length > 0 ? (
               meetings.map((meeting, index) => (
-                <React.Fragment key={meeting.objectId || index}>  {/* 고유 키 설정 */}
-                  <div className="grid grid-cols-[250px_1fr] items-center py-6">
-                  <div className="font-bold text-black text-[31px] mr-32">
-                    {new Date(meeting.createdAt).toISOString().split("T")[0].replace(/-/g, ".")}
-                  </div>
+                <React.Fragment key={meeting.objectId || index}>
+                  <div className="grid grid-cols-[250px_1fr_50px] items-center py-6">
                     <div className="font-bold text-black text-[31px] mr-32">
-                      <Link to={`/meeting/${meeting.objectId}`} className="text-black hover:underline">
-                        {meeting.title}  {/* 제목 표시 */}
+                      {new Date(meeting.createdAt)
+                          .toISOString()
+                          .split("T")[0]
+                          .replace(/-/g, ".")}
+                    </div>
+                    <div className="font-bold text-black text-[31px] mr-32">
+                      <Link
+                        to={`/meeting/summary?code=${meeting.code}`}  // ✅ code 값을 URL에 포함
+                        className="text-black hover:underline"
+                      >
+                        {meeting.title}
                       </Link>
                     </div>
+                    {deleteMode && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(meeting.objectId)}
+                        onChange={() => {
+                          setSelectedIds((prev) =>
+                            prev.includes(meeting.objectId)
+                              ? prev.filter((id) => id !== meeting.objectId)
+                              : [...prev, meeting.objectId]
+                          );
+                        }}
+                      />
+                    )}
                   </div>
                   <Separator className="bg-black/10 h-[1.5px] mt-5" />
                 </React.Fragment>
@@ -72,22 +111,28 @@ const Main = () => {
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-col items-end mt-32 gap-8">
+          <div className="flex flex-col items-end mt-32 gap-4">
             <Link to="/code-input">
               <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-                <span className="text-white text-[25px]">
-                  코드 입력하기
-                </span>
+                <span className="text-white text-[25px]">코드 입력하기</span>
               </Button>
             </Link>
 
             <Link to="/code-create">
               <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
-                <span className="text-white text-[25px]">
-                  코드 생성하기
-                </span>
+                <span className="text-white text-[25px]">코드 생성하기</span>
               </Button>
             </Link>
+
+            {deleteMode ? (
+              <Button onClick={handleConfirmDelete} className="h-[60px] w-48 bg-red-400 hover:bg-red-500 rounded-[5px]">
+                <span className="text-white text-[25px]">삭제 완료하기</span>
+              </Button>
+            ) : (
+              <Button onClick={() => setDeleteMode(true)} className="h-[60px] w-48 bg-red-300 hover:bg-red-400 rounded-[5px]">
+                <span className="text-white text-[25px]">회의 삭제하기</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
