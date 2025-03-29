@@ -25,13 +25,13 @@ const TodoList = ({ todoItems, onUpdate }) => {
       const response = await axios.put(
         `http://localhost:8080/todos`,
         {
-          objectId: item.objectId,  // 문자열 그대로 전송
-          status: updatedStatus,   // 불리언 상태 그대로 전송
+          objectId: item.objectId,
+          status: updatedStatus,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,  // ✅ 토큰 정보 추가
+            "Authorization": `Bearer ${token}`,
           },
         }
       );
@@ -51,17 +51,20 @@ const TodoList = ({ todoItems, onUpdate }) => {
   };
 
   return (
-    <div>
+    <div className="p-4">
       {todoItems.map((item, index) => (
-        <div key={item.objectId || index} className="flex items-center gap-4 mb-2">
+        <div
+          key={item.objectId || index}
+          className="flex items-center gap-3 mb-2 p-2 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100"
+        >
           <input
             type="checkbox"
             checked={item.status}
             onChange={() => handleCheckboxChange(item)}
             disabled={loadingIds.includes(item.objectId)}
-            className="w-6 h-6"
+            className="w-6 h-6 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500"
           />
-          <span className={item.status ? "line-through" : ""}>
+          <span className={`ml-2 text-lg font-medium ${item.status ? "line-through text-gray-400" : "text-gray-800"}`}>
             {item.asignee}: {item.content}
           </span>
         </div>
