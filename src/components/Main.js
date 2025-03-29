@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+`import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
@@ -6,9 +6,12 @@ import React, { useEffect, useState } from "react";
 const Main = () => {
   const [meetings, setMeetings] = useState([]);
   const [error, setError] = useState("");
+  const [deleteMode, setDeleteMode] = useState(false); //삭제 관련
+  const [selectedIds, setSelectedIds] = useState([]); //삭제 관련
 
   useEffect(() => {
     const fetchMeetings = async () => {
+
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -21,8 +24,8 @@ const Main = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token,
-          },
+            "Authorization": "Bearer " + token
+          }
         });
 
         const data = await response.json();
@@ -37,10 +40,31 @@ const Main = () => {
     fetchMeetings();
   }, []);
 
+  const handleConfirmDelete = () => {
+    if (selectedIds.length === 0) {
+      alert("삭제할 회의를 선택하세요!");
+      return;
+    }
+
+    const confirmed = window.confirm("정말 삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    const updatedMeetings = meetings.filter(
+      (meeting) => !selectedIds.includes(meeting.objectId)
+    );
+
+    setMeetings(updatedMeetings);
+    setSelectedIds([]);
+    setDeleteMode(false);
+  };
+
   return (
     <div className="bg-white flex flex-row justify-center w-full">
       <div className="bg-white w-full max-w-[1440px] min-h-[900px] relative p-10">
-        <div className="font-semibold text-black text-xl mb-16">WSC</div>
+        {/* Logo */}
+        <div className="font-semibold text-black text-xl mb-16">
+          WSC
+        </div>
 
         {error && <p className="text-red-500 text-lg mb-4">{error}</p>}
 
@@ -49,12 +73,12 @@ const Main = () => {
             {meetings.length > 0 ? (
               meetings.map((meeting, index) => (
                 <React.Fragment key={meeting.objectId || index}>
-                  <div className="grid grid-cols-[250px_1fr] items-center py-6">
+                  <div className="grid grid-cols-[250px_1fr_50px] items-center py-6">
                     <div className="font-bold text-black text-[31px] mr-32">
                       {new Date(meeting.createdAt)
-                        .toISOString()
-                        .split("T")[0]
-                        .replace(/-/g, ".")}
+                          .toISOString()
+                          .split("T")[0]
+                          .replace(/-/g, ".")}
                     </div>
                     <div className="font-bold text-black text-[31px] mr-32">
                       <Link
@@ -64,6 +88,19 @@ const Main = () => {
                         {meeting.title}
                       </Link>
                     </div>
+                    {deleteMode && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(meeting.objectId)}
+                        onChange={() => {
+                          setSelectedIds((prev) =>
+                            prev.includes(meeting.objectId)
+                              ? prev.filter((id) => id !== meeting.objectId)
+                              : [...prev, meeting.objectId]
+                          );
+                        }}
+                      />
+                    )}
                   </div>
                   <Separator className="bg-black/10 h-[1.5px] mt-5" />
                 </React.Fragment>
@@ -73,7 +110,8 @@ const Main = () => {
             )}
           </div>
 
-          <div className="flex flex-col items-end mt-32 gap-8">
+          {/* Action buttons */}
+          <div className="flex flex-col items-end mt-32 gap-4">
             <Link to="/code-input">
               <Button className="h-[60px] w-48 bg-[#f7b3b3] hover:bg-[#f7b3b3]/90 rounded-[5px]">
                 <span className="text-white text-[25px]">코드 입력하기</span>
@@ -85,6 +123,16 @@ const Main = () => {
                 <span className="text-white text-[25px]">코드 생성하기</span>
               </Button>
             </Link>
+
+            {deleteMode ? (
+              <Button onClick={handleConfirmDelete} className="h-[60px] w-48 bg-red-400 hover:bg-red-500 rounded-[5px]">
+                <span className="text-white text-[25px]">삭제 완료하기</span>
+              </Button>
+            ) : (
+              <Button onClick={() => setDeleteMode(true)} className="h-[60px] w-48 bg-red-300 hover:bg-red-400 rounded-[5px]">
+                <span className="text-white text-[25px]">회의 삭제하기</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>

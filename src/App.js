@@ -18,7 +18,6 @@ function App() {
         <Route path="/onmeeting" element={<OnMeeting />} />  
         <Route path="/code-create" element={<CodeCreate />} />
         <Route path="/code-input" element={<CodeInput />} />
-
         <Route path="/main" element={<Main />} /> 
         <Route path="/signup" element={<SignUp />} />
         <Route path="/" element={<Login />} />
