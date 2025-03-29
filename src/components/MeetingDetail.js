@@ -36,13 +36,16 @@ const MeetingDetail = () => {
           throw new Error("회의 코드가 없습니다.");
         }
 
-        const response = await fetch(`http://localhost:8080/meeting/summary?code=${code}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          `http://localhost:8080/meeting/summary?code=${code}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           const errorMessage = await response.text();
@@ -80,20 +83,33 @@ const MeetingDetail = () => {
       </Button>
       <div className="flex gap-12 items-start">
         <div className="flex-1 pr-8">
-          <MeetingHeader data={{
-            date: new Date(meetingData.createdAt).toISOString().split("T")[0].replace(/-/g, "."),
-            title: meetingData.title,
-            host: meetingData.host,
-            participants: meetingData.participants || [],
-          }} />
+          <MeetingHeader
+            data={{
+              date: new Date(meetingData.createdAt)
+                .toISOString()
+                .split("T")[0]
+                .replace(/-/g, "."),
+              title: meetingData.title,
+              host: meetingData.host,
+              participants: meetingData.participants || [],
+            }}
+          />
           <div className="mt-10">
-            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-full mb-4">TODO</div>
+            <div className="bg-[#f9dada] w-fit px-4 py-1 text-[24px] font-bold rounded-full mb-4">
+              TODO
+            </div>
             <TodoList todoItems={todoItems} onUpdate={handleUpdateTodo} />
           </div>
         </div>
         <div className="w-px bg-gray-300 h-[750px]" />
         <div className="flex-1 pl-5">
-          <MeetingContent content={<span className="text-base">{meetingData.description || "회의 내용이 없습니다."}</span>} />
+          <MeetingContent
+            content={
+              <span className="text-xl leading-relaxed text-gray-800 text-left">
+                {meetingData.description || "회의 내용이 없습니다."}
+              </span>
+            }
+          />
         </div>
       </div>
     </div>
