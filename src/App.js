@@ -13,13 +13,11 @@ import './App.css'; // Tailwind를 적용하기 위해 유지
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/meeting/:id" element={<MeetingDetail />} />
-        <Route path="/meetingdetail" element={<MeetingDetail />} />  
+      <Routes> 
+        <Route path="/meeting/summary" element={<MeetingDetail />} />   
         <Route path="/onmeeting" element={<OnMeeting />} />  
         <Route path="/code-create" element={<CodeCreate />} />
         <Route path="/code-input" element={<CodeInput />} />
-
         <Route path="/main" element={<Main />} /> 
         <Route path="/signup" element={<SignUp />} />
         <Route path="/" element={<Login />} />
