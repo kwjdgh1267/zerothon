@@ -63,6 +63,7 @@ const TodoList = ({ todoItems, onUpdate }) => {
             onChange={() => handleCheckboxChange(item)}
             disabled={loadingIds.includes(item.objectId)}
             className="w-6 h-6 rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-500"
+            style={{ minWidth: "1.5rem", minHeight: "1.5rem" }} // 고정 크기 설정
           />
           <span className={`ml-2 text-lg font-medium ${item.status ? "line-through text-gray-400" : "text-gray-800"}`}>
             {item.asignee}: {item.content}
