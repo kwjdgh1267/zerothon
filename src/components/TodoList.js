@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const TodoList = ({ todoItems, onUpdate }) => {
+  const [loadingIds, setLoadingIds] = useState([]); // 로딩 상태 관리
+
   // 할 일 완료 상태 변경 함수
   const handleCheckboxChange = async (item) => {
     try {
       // 상태 반전하여 로컬에서 먼저 업데이트
-      const updatedItem = { ...item, status: !item.status };
+      const updatedStatus = !item.status;
+      const updatedItem = { ...item, status: updatedStatus };
       onUpdate(updatedItem);
+
+      // 로딩 상태로 설정하여 중복 클릭 방지
+      setLoadingIds((prev) => [...prev, item.objectId]);
 
       // 토큰 가져오기
       const token = localStorage.getItem("token");
@@ -17,8 +23,11 @@ const TodoList = ({ todoItems, onUpdate }) => {
 
       // 백엔드로 상태 변경 요청
       const response = await axios.put(
-        `http://localhost:8080/todos`,  // ✅ PUT 엔드포인트 수정
-        { objectId: item.objectId },  // ✅ JSON 형식으로 ID 전송
+        `http://localhost:8080/todos`,
+        {
+          objectId: item.objectId,  // 문자열 그대로 전송
+          status: updatedStatus,   // 불리언 상태 그대로 전송
+        },
         {
           headers: {
             "Content-Type": "application/json",
@@ -27,9 +36,17 @@ const TodoList = ({ todoItems, onUpdate }) => {
         }
       );
 
-      console.log("상태 변경 완료:", response.data);
+      console.log(`상태 변경 완료: ${updatedStatus ? "완료" : "미완료"} status: ${updatedStatus}`);
+      console.log("응답 데이터:", response.data);
     } catch (error) {
       console.error("상태 변경 중 오류:", error.message);
+
+      // 상태 변경 실패 시 원래 상태로 복구
+      const restoredItem = { ...item, status: item.status };
+      onUpdate(restoredItem);
+    } finally {
+      // 로딩 상태 해제
+      setLoadingIds((prev) => prev.filter((id) => id !== item.objectId));
     }
   };
 
@@ -41,6 +58,7 @@ const TodoList = ({ todoItems, onUpdate }) => {
             type="checkbox"
             checked={item.status}
             onChange={() => handleCheckboxChange(item)}
+            disabled={loadingIds.includes(item.objectId)}
             className="w-6 h-6"
           />
           <span className={item.status ? "line-through" : ""}>
